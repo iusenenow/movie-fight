@@ -9,19 +9,24 @@ const fetchData = async (searchTerm) => {
     }
   })
 
-  console.log(response.data)
+  return response.data.Search
 }
 
 const input = document.querySelector('input')
 
-/* Debouncing an input: waiting for some time to pass after last event to actually do something */
-let timeoutId;
-const onInput = e => {
+const onInput = async e => {
+  const movies = await fetchData(e.target.value)
 
-  timeoutId && clearTimeout(timeoutId)
+  for (let movie of movies) {
+    const div = document.createElement('div')
 
-  timeoutId = setTimeout(() => {
-    fetchData(e.target.value)
-  }, 800)
+    div.innerHTML = `
+      <img src="${movie.Poster}" />
+      <h1>${movie.Title}</h1>
+    `
+
+    document.querySelector('#target').appendChild(div)
+  }
 }
-input.addEventListener('input', onInput)
+
+input.addEventListener('input', debounce(onInput, 800))
